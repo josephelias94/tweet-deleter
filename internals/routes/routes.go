@@ -15,7 +15,7 @@ func StartServer() {
 	log.Printf("Starting server on port %v", constants.PORT)
 
 	if err := http.ListenAndServe(constants.PORT, mux); err != nil {
-		log.Fatal(err)
+		log.Fatalf("routes: %v", err)
 	}
 }
 
