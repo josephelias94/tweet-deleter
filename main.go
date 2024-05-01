@@ -4,24 +4,25 @@ import (
 	"fmt"
 
 	"github.com/josephelias94/tweet-deleter/internals/envs"
-	"github.com/josephelias94/tweet-deleter/internals/routes"
 	"github.com/josephelias94/tweet-deleter/internals/twitter"
 )
 
 func main() {
 	envs.Load()
 
-	go execTwitter()
+	execTwitter()
 
-	routes.StartServer()
+	// routes.StartServer()
 }
 
 func execTwitter() {
-	client := &twitter.Client{
+	client := twitter.Client{
 		Token: envs.GetBearerToken(),
 	}
 
 	client.SetUser("assimfalouojose")
+	fmt.Printf("user: %v\n", client.User)
 
-	fmt.Println(client.User)
+	tweets := client.GetTweets()
+	fmt.Printf("tweet: %v\n", tweets[9])
 }

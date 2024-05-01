@@ -59,7 +59,7 @@ func (c *Client) SetUser(username string) {
 	url := buildUrl(constants.GET_USER_BY_USERNAME, ":username", username)
 	response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return
+		log.Fatal("tweet: Unable to make request to set user")
 	}
 
 	body := models.GetUserResponse{}
@@ -67,4 +67,23 @@ func (c *Client) SetUser(username string) {
 	parseJson(response, &body)
 
 	c.User = body.Data
+}
+
+func (c *Client) GetTweets() []models.Tweet {
+	if c.User.Id == "" {
+		log.Fatal("twitter: User is not set")
+	}
+
+	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.User.Id)
+
+	response, err := c.makeRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal("tweet: Unable to make request to get tweets")
+	}
+
+	body := models.GetTweetsResponse{}
+
+	parseJson(response, &body)
+
+	return body.Data
 }
