@@ -13,7 +13,15 @@ type Meta struct {
 	ResultCount int    `json:"result_count,omitempty"`
 }
 
+type Deleted struct {
+	Deleted bool `json:"deleted,omitempty"`
+}
+
 type GetTweetResponse struct {
 	Data []Tweet `json:"data,omitempty"`
 	Meta Meta    `json:"meta,omitempty"`
+}
+
+type DeleteTweetResponse struct {
+	Data Deleted `json:"data,omitempty"`
 }
