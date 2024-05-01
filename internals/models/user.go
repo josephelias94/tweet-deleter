@@ -6,6 +6,6 @@ type User struct {
 	Username string `json:"username,omitempty"`
 }
 
-type GetUsernameResponse struct {
+type GetUserResponse struct {
 	Data User `json:"data,omitempty"`
 }
