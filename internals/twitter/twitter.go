@@ -27,13 +27,13 @@ func parseJson[T any](response []byte, v *T) {
 	}
 }
 
-func (c *Client) makeRequest(method, url string, body io.Reader) ([]byte, error) {
+func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
 	client := &http.Client{}
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		log.Printf("twitter: Something went wrong while building a request. Message: \"%v\"", url)
-		return nil, err
+		return 0, nil, err
 	}
 
 	request.Header.Add("Authorization", "Bearer "+c.Token)
@@ -41,25 +41,29 @@ func (c *Client) makeRequest(method, url string, body io.Reader) ([]byte, error)
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("twitter: Something went wrong during a request. Message: \"%v\"", err)
-		return nil, err
+		return 0, nil, err
 	}
 
 	defer response.Body.Close()
 
-	resBody, err := io.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Printf("twitter: Something went getting the response. Message: \"%v\"", err)
-		return nil, err
+		return 0, nil, err
 	}
 
-	return resBody, nil
+	return response.StatusCode, responseBody, nil
 }
 
 func (c *Client) SetUser(username string) {
 	url := buildUrl(constants.GET_USER_BY_USERNAME, ":username", username)
-	response, err := c.makeRequest(http.MethodGet, url, nil)
+	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal("tweet: Unable to make request to set user")
+	}
+
+	if statusCode != 200 {
+		log.Fatalf("tweet: Request to get user failed. Response: %v", string(response))
 	}
 
 	body := models.GetUserResponse{}
@@ -76,9 +80,13 @@ func (c *Client) GetTweets() []models.Tweet {
 
 	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.User.Id)
 
-	response, err := c.makeRequest(http.MethodGet, url, nil)
+	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal("tweet: Unable to make request to get tweets")
+	}
+
+	if statusCode != 200 {
+		log.Fatalf("tweet: Request to get tweets failed. Response: %v", string(response))
 	}
 
 	body := models.GetTweetsResponse{}
