@@ -17,7 +17,7 @@ type Deleted struct {
 	Deleted bool `json:"deleted,omitempty"`
 }
 
-type GetTweetResponse struct {
+type GetTweetsResponse struct {
 	Data []Tweet `json:"data,omitempty"`
 	Meta Meta    `json:"meta,omitempty"`
 }
