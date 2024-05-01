@@ -2,7 +2,6 @@ package twitter
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -32,7 +31,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		log.Printf("twitter: Error while building a request. Message: \"%v\"", url)
+		log.Fatalf("twitter: Error while building a request. Message: \"%v\"", url)
 		return 0, nil, err
 	}
 
@@ -40,7 +39,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	response, err := client.Do(request)
 	if err != nil {
-		fmt.Printf("twitter: Error during a request. Message: \"%v\"", err)
+		log.Fatalf("twitter: Error during a request. Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
@@ -48,7 +47,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("twitter: Error getting the response. Message: \"%v\"", err)
+		log.Fatalf("twitter: Error getting the response. Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
