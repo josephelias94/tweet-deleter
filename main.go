@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/josephelias94/tweet-deleter/internals/routes"
+)
 
 func main() {
-	fmt.Print("hello world")
+	routes.StartServer()
 }
