@@ -95,3 +95,22 @@ func (c *Client) GetTweets() []models.Tweet {
 
 	return body.Data
 }
+
+func (c *Client) DeleteTweet(id string) bool {
+	url := buildUrl(constants.DELETE_TWEET, ":id", id)
+
+	statusCode, response, err := c.makeRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		log.Fatalf("tweet: Unable to make request to delete a tweet. Id: %v", id)
+	}
+
+	if statusCode != 200 {
+		log.Fatalf("tweet: Request to delete a tweet failed. Id: %v. Response: %v", id, string(response))
+	}
+
+	body := models.DeleteTweetResponse{}
+
+	parseJson(response, &body)
+
+	return body.Data.Deleted
+}
