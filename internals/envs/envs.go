@@ -17,7 +17,7 @@ func Load() {
 func getValue(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		log.Fatalf("envs: Error loading \"%v\" variable. Check if .env file is loaded or the environment variable is not empty.", key)
+		log.Fatalf("envs: Error loading \"%v\" variable. Check if .env file is loaded or the environment variable is not empty", key)
 	}
 
 	return value

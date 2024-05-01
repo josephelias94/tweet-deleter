@@ -23,7 +23,7 @@ func buildUrl(url, wildcard, value string) string {
 
 func parseJson[T any](response []byte, v *T) {
 	if err := json.Unmarshal(response, &v); err != nil {
-		log.Fatalf("twitter: Something went wrong while converting json. Message: \"%v\"", err)
+		log.Fatalf("twitter: Error converting json. Message: \"%v\"", err)
 	}
 }
 
@@ -32,7 +32,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		log.Printf("twitter: Something went wrong while building a request. Message: \"%v\"", url)
+		log.Printf("twitter: Error while building a request. Message: \"%v\"", url)
 		return 0, nil, err
 	}
 
@@ -40,7 +40,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	response, err := client.Do(request)
 	if err != nil {
-		fmt.Printf("twitter: Something went wrong during a request. Message: \"%v\"", err)
+		fmt.Printf("twitter: Error during a request. Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
@@ -48,7 +48,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("twitter: Something went getting the response. Message: \"%v\"", err)
+		fmt.Printf("twitter: Error getting the response. Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
