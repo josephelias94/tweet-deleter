@@ -9,8 +9,7 @@ import (
 )
 
 func Load() {
-	err := godotenv.Load(".env")
-	if err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("%v Message: \"%v\"", constants.ERROR_ENVS_LOADING_FILE, err)
 	}
 }
