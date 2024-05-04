@@ -10,11 +10,8 @@ var (
 	ERROR_TW_REQUEST_DURING              = SFX_TW + "Error during request | "
 	ERROR_TW_REQUEST_RESPONSE            = SFX_TW + "Error getting the response from request | "
 	ERROR_TW_TWEETS_FAILED_STATUS_CODE   = SFX_TW_TWEETS + "Request to get tweets failed | "
-	ERROR_TW_TWEETS_REQUEST              = SFX_TW_TWEETS + "Unable to request for get tweets | "
-	ERROR_TW_TWEETS_USER_UNSET           = SFX_TW_TWEETS + "User is not set | "
+	ERROR_TW_TWEETS_USER_UNSET           = SFX_TW_TWEETS + "User is not set"
 	ERROR_TW_T_DELETE_FAILED_STATUS_CODE = SFX_TW_T_DELETE + "Request to delete a tweet failed | "
-	ERROR_TW_T_DELETE_REQUEST            = SFX_TW_T_DELETE + "Unable to request for delete a tweet | "
 	ERROR_TW_USER_FAILED_STATUS_CODE     = SFX_TW_USER + "Request to get user failed | "
-	ERROR_TW_USER_REQUEST                = SFX_TW_USER + "Unable to request for set user | "
 	ERROR_VALIDATOR_STRUCT               = SFX_VALIDATOR + "Failed struct validation | "
 )

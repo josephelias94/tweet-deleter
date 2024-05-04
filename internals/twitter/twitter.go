@@ -2,6 +2,7 @@ package twitter
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -21,16 +22,20 @@ func buildUrl(url, wildcard, value string) string {
 	return strings.ReplaceAll(url, wildcard, value)
 }
 
-func parseJson[T any](response []byte, v *T) {
+func parseJson[T any](response []byte, v *T) error {
 	if json.Valid(response) == false {
-		log.Fatalf("%v Provided response: \"%v\"", constants.ERROR_TW_JSON_INVALID, response)
+		return errors.New(constants.ERROR_TW_JSON_INVALID + "Provided response: " + string(response))
 	}
 
 	if err := json.Unmarshal(response, &v); err != nil {
-		log.Fatalf("%v Message: \"%v\"", constants.ERROR_TW_JSON_CONVERTING, err)
+		return errors.New(constants.ERROR_TW_JSON_CONVERTING + "ErrorMessage: " + err.Error())
 	}
 
-	validator.ValidateFields(string(response), v)
+	if err := validator.ValidateFields(string(response), v); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
@@ -38,21 +43,21 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		log.Fatalf("%v Message: \"%v\"", constants.ERROR_TW_REQUEST_BUILDING, url)
+		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_BUILDING + "ErrorMessage: " + err.Error())
 	}
 
 	request.Header.Add("Authorization", "Bearer "+c.Token)
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatalf("%v Message: \"%v\"", constants.ERROR_TW_REQUEST_DURING, err)
+		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_DURING + "ErrorMessage: " + err.Error())
 	}
 
 	defer response.Body.Close()
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalf("%v Message: \"%v\"", constants.ERROR_TW_REQUEST_RESPONSE, err)
+		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_RESPONSE + "ErrorMessage: " + err.Error())
 	}
 
 	return response.StatusCode, responseBody, nil
@@ -60,18 +65,21 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 func (c *Client) SetUser(username string) {
 	url := buildUrl(constants.GET_USER_BY_USERNAME, ":username", username)
+
 	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(constants.ERROR_TW_USER_REQUEST)
+		log.Fatal(err)
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("%v Response: \"%v\"", constants.ERROR_TW_USER_FAILED_STATUS_CODE, string(response))
+		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_USER_FAILED_STATUS_CODE, string(response))
 	}
 
 	body := models.GetUserResponse{}
 
-	parseJson(response, &body)
+	if err := parseJson(response, &body); err != nil {
+		log.Fatal(err)
+	}
 
 	c.User = body.Data
 }
@@ -85,35 +93,39 @@ func (c *Client) GetTweets() []models.Tweet {
 
 	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(constants.ERROR_TW_TWEETS_REQUEST)
+		log.Fatal(err)
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("%v Response: \"%v\"", constants.ERROR_TW_TWEETS_FAILED_STATUS_CODE, string(response))
+		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_TWEETS_FAILED_STATUS_CODE, string(response))
 	}
 
 	body := models.GetTweetsResponse{}
 
-	parseJson(response, &body)
+	if err := parseJson(response, &body); err != nil {
+		log.Fatal(err)
+	}
 
 	return body.Data
 }
 
-func (c *Client) DeleteTweet(id string) bool {
+func (c *Client) DeleteTweet(id string) (bool, error) {
 	url := buildUrl(constants.DELETE_TWEET, ":id", id)
 
 	statusCode, response, err := c.makeRequest(http.MethodDelete, url, nil)
 	if err != nil {
-		log.Fatalf("%v Id: %v", constants.ERROR_TW_T_DELETE_REQUEST, id)
+		return false, err
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("%v Id: %v | Response: \"%v\"", constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE, id, string(response))
+		return false, errors.New(constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE + "Response: " + string(response))
 	}
 
 	body := models.DeleteTweetResponse{}
 
-	parseJson(response, &body)
+	if err := parseJson(response, &body); err != nil {
+		return false, err
+	}
 
-	return body.Data.Deleted
+	return body.Data.Deleted, nil
 }
