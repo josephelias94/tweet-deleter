@@ -21,8 +21,12 @@ func buildUrl(url, wildcard, value string) string {
 }
 
 func parseJson[T any](response []byte, v *T) {
+	if json.Valid(response) == false {
+		log.Fatalf("twitter: Invalid JSON provided: %v", response)
+	}
+
 	if err := json.Unmarshal(response, &v); err != nil {
-		log.Fatalf("twitter: Error converting json. Message: \"%v\"", err)
+		log.Fatalf("twitter: Error converting JSON. Message: \"%v\"", err)
 	}
 }
 
