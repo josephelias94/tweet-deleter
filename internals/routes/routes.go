@@ -49,7 +49,7 @@ func execTwitterThings(auth *authorizer.Authorizer) {
 			time.Sleep(time.Duration(constants.RATE_LIMIT_IN_SECONDS) * time.Second)
 		}
 
-		fmt.Printf("%v/%v | Attempting to delete tweet id: %v \n", counter+1, len(tweets), tweet.Id)
+		fmt.Printf(buildCounterMessage(counter, tweet.Id, len(tweets)))
 		status, err := client.DeleteTweet(tweet.Id)
 
 		if err != nil {
@@ -70,4 +70,8 @@ func isMultipleOfFive(number int) bool {
 	}
 
 	return number%5 == 0
+}
+
+func buildCounterMessage(counter int, id string, length int) string {
+	return fmt.Sprintf("%v/%v | Attempting to delete tweet id: %v\n", counter+1, length, id)
 }
