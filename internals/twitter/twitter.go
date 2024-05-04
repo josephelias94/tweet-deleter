@@ -11,14 +11,11 @@ import (
 	"github.com/josephelias94/tweet-deleter/internals/constants"
 	"github.com/josephelias94/tweet-deleter/internals/models"
 	"github.com/josephelias94/tweet-deleter/internals/validator"
-	"github.com/josephelias94/tweet-deleter/internals/web_scraper"
-	"golang.org/x/oauth2"
 )
 
 type Client struct {
-	Config           oauth2.Config
-	User             models.User
-	authorizedClient *http.Client
+	AuthorizedClient *http.Client
+	user             models.User
 }
 
 func buildUrl(url, wildcard, value string) string {
@@ -41,42 +38,13 @@ func parseJson[T any](response []byte, v *T) error {
 	return nil
 }
 
-func (c *Client) Authorize() {
-	// ctx := context.Background()
-	// verifier := oauth2.GenerateVerifier()
-
-	// url := c.Config.AuthCodeURL("state", oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
-
-	url := "https://twitter.com/i/oauth2/authorize?access_type=offline&client_id=T0NacWNWLXJaWHdhTGQ3aTJ1MnQ6MTpjaQ&code_challenge=w_fGt-F7okQRewx6Nil_YYfLTqZuTvIgas66Sm67y2k&code_challenge_method=S256&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Foauth2%2Fcallback&response_type=code&scope=tweet.read+tweet.write+users.read&state=state"
-	web_scraper.AuthorizeApp(url)
-
-	// fmt.Printf("Visit the URL for the auth dialog: %v", url)
-
-	// Use the authorization code that is pushed to the redirect
-	// URL. Exchange will do the handshake to retrieve the
-	// initial access token. The HTTP Client returned by
-	// conf.Client will refresh the token as necessary.
-	// var code string
-
-	// if _, err := fmt.Scan(&code); err != nil {
-	// 	log.Fatalf("twitter | Failed to fmt.Scan | Error: \"%v\"", err)
-	// }
-
-	// tok, err := c.Config.Exchange(ctx, code, oauth2.VerifierOption(verifier))
-	// if err != nil {
-	// 	log.Fatalf("twitter | Failed to c.Config.Exchange | Error: \"%v\"", err)
-	// }
-
-	// c.authorizedClient = c.Config.Client(ctx, tok)
-}
-
 func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_BUILDING + "ErrorMessage: " + err.Error())
 	}
 
-	response, err := c.authorizedClient.Do(request)
+	response, err := c.AuthorizedClient.Do(request)
 	if err != nil {
 		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_DURING + "ErrorMessage: " + err.Error())
 	}
@@ -109,15 +77,15 @@ func (c *Client) SetUser(username string) {
 		log.Fatal(err)
 	}
 
-	c.User = body.Data
+	c.user = body.Data
 }
 
 func (c *Client) GetTweets() []models.Tweet {
-	if c.User.Id == "" {
+	if c.user.Id == "" {
 		log.Fatal(constants.ERROR_TW_TWEETS_USER_UNSET)
 	}
 
-	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.User.Id)
+	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.user.Id)
 
 	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
