@@ -3,7 +3,7 @@ package constants
 var (
 	ERROR_ENVS_LOADING_FILE              = SFX_ENVS + "Error loading .env file | "
 	ERROR_ENVS_LOADING_VARIABLE          = SFX_ENVS + "Error loading variable. Check if .env file is loaded or the environment variable is not empty | "
-	ERROR_ROUTES_SERVER                  = SFX_ROUTES + "Something went wrong in the server | "
+	ERROR_ROUTES_SERVER                  = SFX_ROUTES + "Error in the server | "
 	ERROR_TW_JSON_CONVERTING             = SFX_TW + "Error converting JSON | "
 	ERROR_TW_JSON_INVALID                = SFX_TW + "Invalid JSON provided | "
 	ERROR_TW_REQUEST_BUILDING            = SFX_TW + "Error building request | "
