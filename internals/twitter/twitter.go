@@ -9,6 +9,7 @@ import (
 
 	"github.com/josephelias94/tweet-deleter/internals/constants"
 	"github.com/josephelias94/tweet-deleter/internals/models"
+	"github.com/josephelias94/tweet-deleter/internals/validator"
 )
 
 type Client struct {
@@ -28,6 +29,8 @@ func parseJson[T any](response []byte, v *T) {
 	if err := json.Unmarshal(response, &v); err != nil {
 		log.Fatalf("twitter: Error converting JSON. Message: \"%v\"", err)
 	}
+
+	validator.ValidateFields(string(response), v)
 }
 
 func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
