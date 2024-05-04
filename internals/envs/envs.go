@@ -10,14 +10,14 @@ import (
 
 func Load() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("%v Message: \"%v\"", constants.ERROR_ENVS_LOADING_FILE, err)
+		log.Fatalf("%vErrorMessage: \"%v\"", constants.ERROR_ENVS_LOADING_FILE, err)
 	}
 }
 
 func getValue(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		log.Fatalf("%v Key: \"%v\"", constants.ERROR_ENVS_LOADING_VARIABLE, key)
+		log.Fatalf("%vKey: \"%v\"", constants.ERROR_ENVS_LOADING_VARIABLE, key)
 	}
 
 	return value

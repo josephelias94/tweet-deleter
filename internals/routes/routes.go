@@ -12,10 +12,10 @@ func StartServer() {
 
 	mux.HandleFunc("GET /oauth2/callback", callback)
 
-	log.Printf("%v Port: %v", constants.INFO_ROUTES_START_SERVER, constants.PORT)
+	log.Printf("%vPort: %v", constants.INFO_ROUTES_START_SERVER, constants.PORT)
 
 	if err := http.ListenAndServe(constants.PORT, mux); err != nil {
-		log.Fatalf("%v Error: \"%v\"", constants.ERROR_ROUTES_SERVER, err)
+		log.Fatalf("%vErrorMessage: \"%v\"", constants.ERROR_ROUTES_SERVER, err)
 	}
 }
 
