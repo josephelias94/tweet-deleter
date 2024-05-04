@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/joho/godotenv v1.5.1
+	golang.org/x/oauth2 v0.20.0
 )
 
 require (

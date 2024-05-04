@@ -1,8 +1,10 @@
 package twitter
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,11 +13,13 @@ import (
 	"github.com/josephelias94/tweet-deleter/internals/constants"
 	"github.com/josephelias94/tweet-deleter/internals/models"
 	"github.com/josephelias94/tweet-deleter/internals/validator"
+	"golang.org/x/oauth2"
 )
 
 type Client struct {
-	Token string
-	User  models.User
+	Config           oauth2.Config
+	User             models.User
+	authorizedClient *http.Client
 }
 
 func buildUrl(url, wildcard, value string) string {
@@ -38,17 +42,38 @@ func parseJson[T any](response []byte, v *T) error {
 	return nil
 }
 
-func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
-	client := &http.Client{}
+func (c *Client) Authorize() {
+	ctx := context.Background()
+	verifier := oauth2.GenerateVerifier()
 
+	url := c.Config.AuthCodeURL("state", oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
+	fmt.Printf("Visit the URL for the auth dialog: %v", url)
+
+	// Use the authorization code that is pushed to the redirect
+	// URL. Exchange will do the handshake to retrieve the
+	// initial access token. The HTTP Client returned by
+	// conf.Client will refresh the token as necessary.
+	var code string
+
+	if _, err := fmt.Scan(&code); err != nil {
+		log.Fatalf("twitter | Failed to fmt.Scan | Error: \"%v\"", err)
+	}
+
+	tok, err := c.Config.Exchange(ctx, code, oauth2.VerifierOption(verifier))
+	if err != nil {
+		log.Fatalf("twitter | Failed to c.Config.Exchange | Error: \"%v\"", err)
+	}
+
+	c.authorizedClient = c.Config.Client(ctx, tok)
+}
+
+func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, error) {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_BUILDING + "ErrorMessage: " + err.Error())
 	}
 
-	request.Header.Add("Authorization", "Bearer "+c.Token)
-
-	response, err := client.Do(request)
+	response, err := c.authorizedClient.Do(request)
 	if err != nil {
 		return 0, nil, errors.New(constants.ERROR_TW_REQUEST_DURING + "ErrorMessage: " + err.Error())
 	}

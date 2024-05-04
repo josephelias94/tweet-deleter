@@ -26,3 +26,15 @@ func getValue(key string) string {
 func GetBearerToken() string {
 	return getValue("BEARER_TOKEN")
 }
+
+func GetClientId() string {
+	return getValue("CLIENT_ID")
+}
+
+func GetClientSecret() string {
+	return getValue("CLIENT_SECRET")
+}
+
+func GetRedirectUri() string {
+	return getValue("REDIRECT_URI")
+}
