@@ -5,19 +5,20 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/josephelias94/tweet-deleter/internals/constants"
 )
 
 func Load() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("envs | Error loading .env file | Message: \"%v\"", err)
+		log.Fatalf("%v Message: \"%v\"", constants.ERROR_ENVS_LOADING_FILE, err)
 	}
 }
 
 func getValue(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		log.Fatalf("envs | Error loading \"%v\" variable. Check if .env file is loaded or the environment variable is not empty", key)
+		log.Fatalf("%v Key: \"%v\"", constants.ERROR_ENVS_LOADING_VARIABLE, key)
 	}
 
 	return value
