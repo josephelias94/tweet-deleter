@@ -21,10 +21,10 @@ func execTwitter() {
 	}
 
 	client.SetUser("assimfalouojose")
-	fmt.Printf("user: %v\n", client.User)
+	fmt.Printf("user | %v\n", client.User)
 
-	tweets := client.GetTweets()
-	fmt.Printf("tweet: %v\n", tweets)
+	// tweets := client.GetTweets()
+	// fmt.Printf("tweet | %v\n", tweets)
 
-	client.DeleteTweet(tweets[0].Id)
+	// client.DeleteTweet(tweets[0].Id)
 }

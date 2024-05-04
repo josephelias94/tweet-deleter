@@ -23,11 +23,11 @@ func buildUrl(url, wildcard, value string) string {
 
 func parseJson[T any](response []byte, v *T) {
 	if json.Valid(response) == false {
-		log.Fatalf("twitter: Invalid JSON provided: %v", response)
+		log.Fatalf("twitter | Invalid JSON provided: %v", response)
 	}
 
 	if err := json.Unmarshal(response, &v); err != nil {
-		log.Fatalf("twitter: Error converting JSON. Message: \"%v\"", err)
+		log.Fatalf("twitter | Error converting JSON | Message: \"%v\"", err)
 	}
 
 	validator.ValidateFields(string(response), v)
@@ -38,7 +38,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		log.Fatalf("twitter: Error while building a request. Message: \"%v\"", url)
+		log.Fatalf("twitter | Error while building a request | Message: \"%v\"", url)
 		return 0, nil, err
 	}
 
@@ -46,7 +46,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatalf("twitter: Error during a request. Message: \"%v\"", err)
+		log.Fatalf("twitter | Error during a request | Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
@@ -54,7 +54,7 @@ func (c *Client) makeRequest(method, url string, body io.Reader) (int, []byte, e
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalf("twitter: Error getting the response. Message: \"%v\"", err)
+		log.Fatalf("twitter | Error getting the response | Message: \"%v\"", err)
 		return 0, nil, err
 	}
 
@@ -65,11 +65,11 @@ func (c *Client) SetUser(username string) {
 	url := buildUrl(constants.GET_USER_BY_USERNAME, ":username", username)
 	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal("tweet: Unable to make request to set user")
+		log.Fatal("tweet | Unable to make request to set user")
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("tweet: Request to get user failed. Response: %v", string(response))
+		log.Fatalf("tweet | Request to get user failed | Response: \"%v\"", string(response))
 	}
 
 	body := models.GetUserResponse{}
@@ -81,18 +81,18 @@ func (c *Client) SetUser(username string) {
 
 func (c *Client) GetTweets() []models.Tweet {
 	if c.User.Id == "" {
-		log.Fatal("twitter: User is not set")
+		log.Fatal("twitter | User is not set")
 	}
 
 	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.User.Id)
 
 	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal("tweet: Unable to make request to get tweets")
+		log.Fatal("tweet | Unable to make request to get tweets")
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("tweet: Request to get tweets failed. Response: %v", string(response))
+		log.Fatalf("tweet | Request to get tweets failed | Response: \"%v\"", string(response))
 	}
 
 	body := models.GetTweetsResponse{}
@@ -107,11 +107,11 @@ func (c *Client) DeleteTweet(id string) bool {
 
 	statusCode, response, err := c.makeRequest(http.MethodDelete, url, nil)
 	if err != nil {
-		log.Fatalf("tweet: Unable to make request to delete a tweet. Id: %v", id)
+		log.Fatalf("tweet | Unable to make request to delete a tweet | Id: %v", id)
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("tweet: Request to delete a tweet failed. Id: %v. Response: %v", id, string(response))
+		log.Fatalf("tweet | Request to delete a tweet failed | Id: %v | Response: \"%v\"", id, string(response))
 	}
 
 	body := models.DeleteTweetResponse{}
