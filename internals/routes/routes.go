@@ -53,7 +53,7 @@ func execTwitterThings(auth *authorizer.Authorizer) {
 		status, err := client.DeleteTweet(tweet.Id)
 
 		if err != nil {
-			fmt.Printf("Wasn't possible to delete tweet | Error: %v \n\n", err.Error())
+			fmt.Printf("%v \n\n", err.Error())
 		} else if status == false {
 			fmt.Printf("Wasn't possible to delete tweet | No errors available \n\n")
 		} else if status == true {

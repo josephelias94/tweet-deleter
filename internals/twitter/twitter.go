@@ -114,7 +114,13 @@ func (c *Client) DeleteTweet(id string) (bool, error) {
 	}
 
 	if statusCode != 200 {
-		return false, errors.New(constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE + "Response: " + string(response))
+		body := models.FailedRequest{}
+
+		if err := parseJson(response, &body); err != nil {
+			return false, err
+		}
+
+		return false, errors.New(constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE + "Error: " + body.Title)
 	}
 
 	body := models.DeleteTweetResponse{}
