@@ -59,7 +59,7 @@ func (a *Authorizer) Authorize() {
 func (a *Authorizer) SetToken(code string) {
 	tok, err := a.Config.Exchange(a.ctx, code, oauth2.VerifierOption(a.verifier))
 	if err != nil {
-		log.Fatalf("twitter | Failed to a.Config.Exchange | Error: \"%v\"", err)
+		log.Fatalf("%vErrorMessage: \"%v\"", constants.ERROR_AUTH_TOKEN_EXCHANGE, err)
 	}
 
 	a.authorizedClient = a.Config.Client(a.ctx, tok)

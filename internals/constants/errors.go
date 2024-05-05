@@ -1,6 +1,7 @@
 package constants
 
 var (
+	ERROR_AUTH_TOKEN_EXCHANGE            = SFX_AUTH + "Failed to convert an authorization code into a token | "
 	ERROR_ENVS_LOADING_FILE              = SFX_ENVS + "Error loading .env file | "
 	ERROR_ENVS_LOADING_VARIABLE          = SFX_ENVS + "Error loading variable. Check if .env file is loaded or the environment variable is not empty | "
 	ERROR_ROUTES_SERVER                  = SFX_ROUTES + "Error in the server | "

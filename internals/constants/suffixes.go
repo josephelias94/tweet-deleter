@@ -1,6 +1,7 @@
 package constants
 
 var (
+	SFX_AUTH        = "authorizer | "
 	SFX_ENVS        = "envs | "
 	SFX_ROUTES      = "routes | "
 	SFX_TW          = "twitter | "
