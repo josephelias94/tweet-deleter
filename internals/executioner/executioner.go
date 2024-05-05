@@ -37,11 +37,11 @@ func recursiveIteration() {
 		os.Exit(0)
 	}
 
-	if isMultipleOfFive(counter) {
-		time.Sleep(time.Duration(constants.RATE_LIMIT_IN_SECONDS) * time.Second)
-	}
-
 	for _, tweet := range tweets {
+		if isMultipleOfFive(counter) {
+			time.Sleep(time.Duration(constants.RATE_LIMIT_IN_SECONDS) * time.Second)
+		}
+
 		fmt.Printf(buildCounterMessage(counter, tweet.Id, len(tweets)))
 		status, err := client.DeleteTweet(tweet.Id)
 
@@ -57,7 +57,7 @@ func recursiveIteration() {
 	}
 
 	time.Sleep(time.Duration(constants.RATE_LIMIT_IN_SECONDS) * time.Second)
-	fmt.Printf("Iteration of %v tweet(s) finished. Starting over again", len(tweets))
+	fmt.Printf("Iteration of %v tweet(s) finished. Starting over again \n\n", len(tweets))
 
 	recursiveIteration()
 }
