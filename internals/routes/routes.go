@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/josephelias94/tweet-deleter/internals/authorizer"
@@ -62,6 +63,9 @@ func execTwitterThings(auth *authorizer.Authorizer) {
 
 		counter += 1
 	}
+
+	fmt.Print("Finished!")
+	os.Exit(1)
 }
 
 func isMultipleOfFive(number int) bool {
