@@ -1,15 +1,11 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/josephelias94/tweet-deleter/internals/authorizer"
 	"github.com/josephelias94/tweet-deleter/internals/constants"
-	"github.com/josephelias94/tweet-deleter/internals/twitter"
+	"github.com/josephelias94/tweet-deleter/internals/executioner"
 )
 
 func StartServer() {
@@ -26,56 +22,6 @@ func StartServer() {
 
 func callback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	auth := authorizer.GetInstance()
 
-	auth.SetToken(code)
-	execTwitterThings(auth)
-
-	w.Write([]byte("Welcome to /callback endpoint | code: " + code))
-}
-
-func execTwitterThings(auth *authorizer.Authorizer) {
-	counter := 0
-
-	client := twitter.Client{
-		AuthorizedClient: auth.GetAuthorizedClient(),
-	}
-
-	client.SetUser("assimfalouojose")
-	tweets := client.GetTweets()
-
-	for _, tweet := range tweets {
-
-		if isMultipleOfFive(counter) {
-			time.Sleep(time.Duration(constants.RATE_LIMIT_IN_SECONDS) * time.Second)
-		}
-
-		fmt.Printf(buildCounterMessage(counter, tweet.Id, len(tweets)))
-		status, err := client.DeleteTweet(tweet.Id)
-
-		if err != nil {
-			fmt.Printf("%v \n\n", err.Error())
-		} else if status == false {
-			fmt.Printf("Wasn't possible to delete tweet | No errors available \n\n")
-		} else if status == true {
-			fmt.Printf("Deleted successfully \n\n")
-		}
-
-		counter += 1
-	}
-
-	fmt.Print("Finished!")
-	os.Exit(1)
-}
-
-func isMultipleOfFive(number int) bool {
-	if number == 0 {
-		return false // skip it the first iteration
-	}
-
-	return number%5 == 0
-}
-
-func buildCounterMessage(counter int, id string, length int) string {
-	return fmt.Sprintf("%v/%v | Attempting to delete tweet id: %v\n", counter+1, length, id)
+	executioner.StartDeletingStuff(code)
 }
