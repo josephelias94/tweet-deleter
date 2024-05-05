@@ -3,6 +3,7 @@ package twitter
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -120,7 +121,18 @@ func (c *Client) DeleteTweet(id string) (bool, error) {
 			return false, err
 		}
 
-		return false, errors.New(constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE + "Error: " + body.Title)
+		message := fmt.Sprintf("%v ErrorTitle: %v | ErrorDetail: %v",
+			constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE, body.Title, body.Detail)
+
+		if body.Status != nil {
+			message = fmt.Sprintf("%v | ErrorStatus: %v", message, body.Status)
+		}
+
+		if body.Errors != nil {
+			message = fmt.Sprintf("%v | Errors: \"%v\"", message, body.Errors)
+		}
+
+		return false, errors.New(message)
 	}
 
 	body := models.DeleteTweetResponse{}
