@@ -10,14 +10,14 @@ type (
 	}
 
 	GetLikedTweetsMeta struct {
-		NextToken   string `json:"next_token,omitempty" validate:"required"`
+		NextToken   string `json:"next_token,omitempty"`
 		ResultCount int    `json:"result_count,omitempty" validate:"required"`
 	}
 
 	GetTweetsMeta struct {
-		NewestId    string `json:"newest_id,omitempty" validate:"required"`
-		NextToken   string `json:"next_token,omitempty" validate:"required"`
-		OldestId    string `json:"oldest_id,omitempty" validate:"required"`
+		NewestId    string `json:"newest_id,omitempty"`
+		NextToken   string `json:"next_token,omitempty"`
+		OldestId    string `json:"oldest_id,omitempty"`
 		ResultCount int    `json:"result_count,omitempty" validate:"required"`
 	}
 
@@ -28,12 +28,12 @@ type (
 	}
 
 	GetTweetsResponse struct {
-		Data []Tweet       `json:"data,omitempty" validate:"required"`
+		Data []Tweet       `json:"data,omitempty"`
 		Meta GetTweetsMeta `json:"meta,omitempty" validate:"required"`
 	}
 
 	GetLikedTweetsResponse struct {
-		Data []Tweet            `json:"data,omitempty" validate:"required"`
+		Data []Tweet            `json:"data,omitempty"`
 		Meta GetLikedTweetsMeta `json:"meta,omitempty" validate:"required"`
 	}
 
