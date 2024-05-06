@@ -69,7 +69,7 @@ func (c *Client) SetUser(username string) {
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_USER_FAILED_STATUS_CODE, string(response))
+		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_S_USER_FAILED_STATUS_CODE, string(response))
 	}
 
 	body := models.GetUserResponse{}
@@ -81,9 +81,34 @@ func (c *Client) SetUser(username string) {
 	c.user = body.Data
 }
 
+func (c *Client) GetLikedTweets() []models.Tweet {
+	if c.user.Id == "" {
+		log.Fatal(constants.ERROR_TW_G_L_TWEETS_USER_UNSET)
+	}
+
+	url := buildUrl(constants.GET_LIKED_TWEETS_BY_USER, ":id", c.user.Id)
+
+	statusCode, response, err := c.makeRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if statusCode != 200 {
+		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_G_L_TWEETS_FAILED_STATUS_CODE, string(response))
+	}
+
+	body := models.GetTweetsResponse{}
+
+	if err := parseJson(response, &body); err != nil {
+		log.Fatal(err)
+	}
+
+	return body.Data
+}
+
 func (c *Client) GetTweets() []models.Tweet {
 	if c.user.Id == "" {
-		log.Fatal(constants.ERROR_TW_TWEETS_USER_UNSET)
+		log.Fatal(constants.ERROR_TW_G_TWEETS_USER_UNSET)
 	}
 
 	url := buildUrl(constants.GET_TWEETS_BY_USER, ":id", c.user.Id)
@@ -94,7 +119,7 @@ func (c *Client) GetTweets() []models.Tweet {
 	}
 
 	if statusCode != 200 {
-		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_TWEETS_FAILED_STATUS_CODE, string(response))
+		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_G_TWEETS_FAILED_STATUS_CODE, string(response))
 	}
 
 	body := models.GetTweetsResponse{}
@@ -122,7 +147,46 @@ func (c *Client) DeleteTweet(id string) (bool, error) {
 		}
 
 		message := fmt.Sprintf("%v ErrorTitle: %v | ErrorDetail: %v",
-			constants.ERROR_TW_T_DELETE_FAILED_STATUS_CODE, body.Title, body.Detail)
+			constants.ERROR_TW_D_TWEETS_FAILED_STATUS_CODE, body.Title, body.Detail)
+
+		if body.Status != nil {
+			message = fmt.Sprintf("%v | ErrorStatus: %v", message, body.Status)
+		}
+
+		if body.Errors != nil {
+			message = fmt.Sprintf("%v | Errors: \"%v\"", message, body.Errors)
+		}
+
+		return false, errors.New(message)
+	}
+
+	body := models.DeleteTweetResponse{}
+
+	if err := parseJson(response, &body); err != nil {
+		return false, err
+	}
+
+	return body.Data.Deleted, nil
+}
+
+func (c *Client) DeleteLikedTweet(tweetId string) (bool, error) {
+	url := buildUrl(constants.DELETE_LIKED_TWEET, ":id", c.user.Id)
+	url = buildUrl(url, ":tweet_id", tweetId)
+
+	statusCode, response, err := c.makeRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return false, err
+	}
+
+	if statusCode != 200 {
+		body := models.FailedRequest{}
+
+		if err := parseJson(response, &body); err != nil {
+			return false, err
+		}
+
+		message := fmt.Sprintf("%v ErrorTitle: %v | ErrorDetail: %v",
+			constants.ERROR_TW_D_L_TWEETS_FAILED_STATUS_CODE, body.Title, body.Detail)
 
 		if body.Status != nil {
 			message = fmt.Sprintf("%v | ErrorStatus: %v", message, body.Status)
