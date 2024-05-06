@@ -205,5 +205,5 @@ func (c *Client) DeleteLikedTweet(tweetId string) (bool, error) {
 		return false, err
 	}
 
-	return body.Data.Liked, nil
+	return !body.Data.Liked, nil
 }
