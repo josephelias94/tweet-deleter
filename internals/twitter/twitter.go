@@ -97,7 +97,7 @@ func (c *Client) GetLikedTweets() []models.Tweet {
 		log.Fatalf("%vResponse: \"%v\"", constants.ERROR_TW_G_L_TWEETS_FAILED_STATUS_CODE, string(response))
 	}
 
-	body := models.GetTweetsResponse{}
+	body := models.GetLikedTweetsResponse{}
 
 	if err := parseJson(response, &body); err != nil {
 		log.Fatal(err)
@@ -199,11 +199,11 @@ func (c *Client) DeleteLikedTweet(tweetId string) (bool, error) {
 		return false, errors.New(message)
 	}
 
-	body := models.DeleteTweetResponse{}
+	body := models.DeleteLikedTweetResponse{}
 
 	if err := parseJson(response, &body); err != nil {
 		return false, err
 	}
 
-	return body.Data.Deleted, nil
+	return body.Data.Liked, nil
 }
